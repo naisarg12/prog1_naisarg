@@ -1,2 +1,2 @@
-# prog1-2023-shell
-This repo branch contains the shell for program 1 from cg class 2023 at nc state (ray tracing ellipsoids).
+# prog1-2024-partial_submission
+The branch contains the files and codes for the partial submission for Program-1 for triangles.
