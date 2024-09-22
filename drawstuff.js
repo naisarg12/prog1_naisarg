@@ -110,7 +110,7 @@ function drawRandPixels(context) {
 //get the input triangles from the standard class URL
 function getInputTriangles() {
     const INPUT_TRIANGLES_URL = 
-        "https://raw.githubusercontent.com/naisarg12/prog1_naisarg/gh-pages/triangles3.json";
+        "https://raw.githubusercontent.com/naisarg12/prog1_naisarg/gh-pages/triangles2.json";
         
     // load the triangles file
     var httpReq = new XMLHttpRequest(); // a new http request
