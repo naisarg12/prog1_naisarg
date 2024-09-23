@@ -321,33 +321,28 @@ function drawRandPixelsInInputTriangles(context) {
 //draw 2d projections traingle from the JSON file at class github
 function drawInputTrianglesUsingPaths(context) {
     var inputTriangles = getInputTriangles();
-
+    
     if (inputTriangles != String.null) {
         var w = context.canvas.width;
         var h = context.canvas.height;
 
-        // Find the min and max coordinates
+        // Find the min and max coordinates to normalize the vertices
         var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        
+        // Loop over all vertices to find the bounds
         inputTriangles.forEach(file => {
             file.vertices.forEach(vertex => {
                 if (vertex[0] < minX) minX = vertex[0];
                 if (vertex[0] > maxX) maxX = vertex[0];
                 if (vertex[1] < minY) minY = vertex[1];
-                if (vertex[1] > maxY) maxY = vertex[1];   
-
+                if (vertex[1] > maxY) maxY = vertex[1];
             });
         });
-
-        // Calculate the bounding box dimensions
-        var bboxWidth = maxX - minX;
-        var bboxHeight = maxY - minY;
-
-        // Calculate the translation to center the bounding box
-        var translateX = (w - bboxWidth) / 2 - minX;
-        var translateY = (h - bboxHeight) / 2 - minY;
-
-        // Scale to fit within the canvas while maintaining aspect ratio
-        var scale = Math.min(w / bboxWidth, h / bboxHeight);
+        
+        // Normalize the vertices so they fit within the canvas
+        var scaleX = w / (maxX - minX);
+        var scaleY = h / (maxY - minY);
+        var scale = Math.min(scaleX, scaleY); // Uniform scaling to avoid distortion
 
         // Loop over the input files
         inputTriangles.forEach(file => {
@@ -356,10 +351,10 @@ function drawInputTrianglesUsingPaths(context) {
                 var vertex2 = file.vertices[triangle[1]];
                 var vertex3 = file.vertices[triangle[2]];
 
-                // Apply translation and scaling
-                vertex1 = [(vertex1[0] + translateX) * scale, (vertex1[1] + translateY) * scale];
-                vertex2 = [(vertex2[0] + translateX) * scale, (vertex2[1] + translateY) * scale];
-                vertex3 = [(vertex3[0] + translateX) * scale, (vertex3[1] + translateY) * scale];
+                // Apply normalization and scaling to vertex positions
+                var v1 = [(vertex1[0] - minX) * scale, h - (vertex1[1] - minY) * scale]; // Flipping Y for correct orientation
+                var v2 = [(vertex2[0] - minX) * scale, h - (vertex2[1] - minY) * scale];
+                var v3 = [(vertex3[0] - minX) * scale, h - (vertex3[1] - minY) * scale];
 
                 // Set the color for the triangle
                 context.fillStyle = `rgb(
@@ -370,9 +365,9 @@ function drawInputTrianglesUsingPaths(context) {
 
                 // Draw the triangle
                 var path = new Path2D();
-                path.moveTo(vertex1[0], vertex1[1]);
-                path.lineTo(vertex2[0], vertex2[1]);
-                path.lineTo(vertex3[0], vertex3[1]);
+                path.moveTo(v1[0], v1[1]);
+                path.lineTo(v2[0], v2[1]);
+                path.lineTo(v3[0], v3[1]);
                 path.closePath();
                 context.fill(path);
             });
