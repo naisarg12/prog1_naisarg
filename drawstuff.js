@@ -319,60 +319,140 @@ function drawRandPixelsInInputTriangles(context) {
 } // end draw rand pixels in input triangles
 
 //draw 2d projections traingle from the JSON file at class github
-function drawInputTrianglesUsingPaths(context) {
+// function drawInputTrianglesUsingPaths(context) {
+//     var inputTriangles = getInputTriangles();
+    
+//     if (inputTriangles != String.null) { 
+//         var w = context.canvas.width;
+//         var h = context.canvas.height;
+
+//         // Find the min and max coordinates to normalize the vertices
+//         var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        
+//         // Loop over all vertices to find the bounds
+//         inputTriangles.forEach(file => {
+//             file.vertices.forEach(vertex => {
+//                 if (vertex[0] < minX) minX = vertex[0];
+//                 if (vertex[0] > maxX) maxX = vertex[0];
+//                 if (vertex[1] < minY) minY = vertex[1];
+//                 if (vertex[1] > maxY) maxY = vertex[1];
+//             });
+//         });
+        
+//         // Normalize the vertices so they fit within the canvas
+//         var scaleX = w / (maxX - minX);
+//         var scaleY = h / (maxY - minY);
+
+//         // Loop over the input files
+//         inputTriangles.forEach(file => {
+//             file.triangles.forEach(triangle => {
+//                 var vertex1 = file.vertices[triangle[0]];
+//                 var vertex2 = file.vertices[triangle[1]];
+//                 var vertex3 = file.vertices[triangle[2]];
+
+//                 // Apply normalization to vertex positions
+//                 var v1 = [(vertex1[0] - minX) * scaleX, (vertex1[1] - minY) * scaleY];
+//                 var v2 = [(vertex2[0] - minX) * scaleX, (vertex2[1] - minY) * scaleY];
+//                 var v3 = [(vertex3[0] - minX) * scaleX, (vertex3[1] - minY) * scaleY];
+
+//                 // Set the color for the triangle
+//                 context.fillStyle = `rgb(
+//                     ${Math.floor(file.material.diffuse[0] * 255)},
+//                     ${Math.floor(file.material.diffuse[1] * 255)},
+//                     ${Math.floor(file.material.diffuse[2] * 255)}
+//                 )`;
+
+//                 // Draw the triangle
+//                 var path = new Path2D();
+//                 path.moveTo(v1[0], v1[1]);
+//                 path.lineTo(v2[0], v2[1]);
+//                 path.lineTo(v3[0], v3[1]);
+//                 path.closePath();
+//                 context.fill(path);
+//             });
+//         });
+//     }
+// }
+// Function to render unlit triangles using ray casting
+function drawRayCastedTriangles(context) {
     var inputTriangles = getInputTriangles();
     
     if (inputTriangles != String.null) { 
         var w = context.canvas.width;
         var h = context.canvas.height;
-
-        // Find the min and max coordinates to normalize the vertices
-        var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
         
-        // Loop over all vertices to find the bounds
-        inputTriangles.forEach(file => {
-            file.vertices.forEach(vertex => {
-                if (vertex[0] < minX) minX = vertex[0];
-                if (vertex[0] > maxX) maxX = vertex[0];
-                if (vertex[1] < minY) minY = vertex[1];
-                if (vertex[1] > maxY) maxY = vertex[1];
-            });
-        });
+        // Initialize depth buffer (z-buffer)
+        var depthBuffer = new Array(w * h).fill(Infinity);  // Set initial depth to infinity
+        var imagedata = context.createImageData(w, h);      // Initialize image data
         
-        // Normalize the vertices so they fit within the canvas
-        var scaleX = w / (maxX - minX);
-        var scaleY = h / (maxY - minY);
-
-        // Loop over the input files
+        // Loop over the input triangles
         inputTriangles.forEach(file => {
             file.triangles.forEach(triangle => {
                 var vertex1 = file.vertices[triangle[0]];
                 var vertex2 = file.vertices[triangle[1]];
                 var vertex3 = file.vertices[triangle[2]];
+                
+                // Convert to screen coordinates
+                var v1 = [Math.round(w * vertex1[0]), Math.round(h * vertex1[1]), vertex1[2]];
+                var v2 = [Math.round(w * vertex2[0]), Math.round(h * vertex2[1]), vertex2[2]];
+                var v3 = [Math.round(w * vertex3[0]), Math.round(h * vertex3[1]), vertex3[2]];
 
-                // Apply normalization to vertex positions
-                var v1 = [(vertex1[0] - minX) * scaleX, (vertex1[1] - minY) * scaleY];
-                var v2 = [(vertex2[0] - minX) * scaleX, (vertex2[1] - minY) * scaleY];
-                var v3 = [(vertex3[0] - minX) * scaleX, (vertex3[1] - minY) * scaleY];
-
-                // Set the color for the triangle
-                context.fillStyle = `rgb(
-                    ${Math.floor(file.material.diffuse[0] * 255)},
-                    ${Math.floor(file.material.diffuse[1] * 255)},
-                    ${Math.floor(file.material.diffuse[2] * 255)}
-                )`;
-
-                // Draw the triangle
-                var path = new Path2D();
-                path.moveTo(v1[0], v1[1]);
-                path.lineTo(v2[0], v2[1]);
-                path.lineTo(v3[0], v3[1]);
-                path.closePath();
-                context.fill(path);
+                // Get the diffuse color
+                var color = new Color(
+                    file.material.diffuse[0] * 255,
+                    file.material.diffuse[1] * 255,
+                    file.material.diffuse[2] * 255,
+                    255
+                );
+                
+                // Rasterize the triangle using barycentric coordinates
+                rasterizeTriangle(v1, v2, v3, color, depthBuffer, imagedata, w, h);
             });
         });
+        
+        // Put the image data into the canvas
+        context.putImageData(imagedata, 0, 0);
     }
 }
+
+// Rasterize the triangle using Barycentric coordinates and depth buffer
+function rasterizeTriangle(v1, v2, v3, color, depthBuffer, imagedata, w, h) {
+    // Compute bounding box for the triangle
+    var minX = Math.max(Math.min(v1[0], v2[0], v3[0]), 0);
+    var maxX = Math.min(Math.max(v1[0], v2[0], v3[0]), w - 1);
+    var minY = Math.max(Math.min(v1[1], v2[1], v3[1]), 0);
+    var maxY = Math.min(Math.max(v1[1], v2[1], v3[1]), h - 1);
+
+    // Loop through all pixels in the bounding box
+    for (var x = minX; x <= maxX; x++) {
+        for (var y = minY; y <= maxY; y++) {
+            // Use Barycentric coordinates to test if the point is inside the triangle
+            var barycentric = getBarycentricCoordinates(x, y, v1, v2, v3);
+            if (barycentric[0] >= 0 && barycentric[1] >= 0 && barycentric[2] >= 0) {
+                // Compute depth (z-value) for depth testing
+                var z = barycentric[0] * v1[2] + barycentric[1] * v2[2] + barycentric[2] * v3[2];
+
+                // Check depth buffer
+                var pixelIndex = (y * w + x);
+                if (z < depthBuffer[pixelIndex]) {
+                    depthBuffer[pixelIndex] = z;  // Update depth buffer
+                    drawPixel(imagedata, x, y, color);  // Update color buffer
+                }
+            }
+        }
+    }
+}
+
+// Get Barycentric coordinates of point (px, py) with respect to the triangle (v1, v2, v3)
+function getBarycentricCoordinates(px, py, v1, v2, v3) {
+    var detT = (v2[1] - v3[1]) * (v1[0] - v3[0]) + (v3[0] - v2[0]) * (v1[1] - v3[1]);
+    var lambda1 = ((v2[1] - v3[1]) * (px - v3[0]) + (v3[0] - v2[0]) * (py - v3[1])) / detT;
+    var lambda2 = ((v3[1] - v1[1]) * (px - v3[0]) + (v1[0] - v3[0]) * (py - v3[1])) / detT;
+    var lambda3 = 1 - lambda1 - lambda2;
+    return [lambda1, lambda2, lambda3];
+}
+
+// The rest of your utility functions remain the same, including the Color class and drawPixel function.
 
 
 // put random points in the boxes from the class github
@@ -490,9 +570,11 @@ function main() {
     //drawRandPixelsInInputTriangles(context);
       // shows how to draw pixels and read input file
     
-    drawInputTrianglesUsingPaths(context);
+    // drawInputTrianglesUsingPaths(context);
       // shows how to read input file, but not how to draw pixels
-    
+
+    drawRayCastedTriangles(context);
+	
     //drawRandPixelsInInputBoxes(context);
       // shows how to draw pixels and read input file
     
