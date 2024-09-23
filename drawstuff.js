@@ -86,6 +86,27 @@ function drawRandPixels(context) {
     context.putImageData(imagedata, 0, 0);
 } // end draw random pixels
 
+// get the input ellipsoids from the standard class URL
+// function getInputEllipsoids() {
+//     const INPUT_ELLIPSOIDS_URL = 
+//         "https://ncsucgclass.github.io/prog1/ellipsoids.json";
+        
+//     // load the ellipsoids file
+//     var httpReq = new XMLHttpRequest(); // a new http request
+//     httpReq.open("GET",INPUT_ELLIPSOIDS_URL,false); // init the request
+//     httpReq.send(null); // send the request
+//     var startTime = Date.now();
+//     while ((httpReq.status !== 200) && (httpReq.readyState !== XMLHttpRequest.DONE)) {
+//         if ((Date.now()-startTime) > 3000)
+//             break;
+//     } // until its loaded or we time out after three seconds
+//     if ((httpReq.status !== 200) || (httpReq.readyState !== XMLHttpRequest.DONE)) {
+//         console.log*("Unable to open input ellipses file!");
+//         return String.null;
+//     } else
+//         return JSON.parse(httpReq.response); 
+// } // end get input ellipsoids
+
 //get the input triangles from the standard class URL
 function getInputTriangles() {
     const INPUT_TRIANGLES_URL = 
@@ -106,6 +127,117 @@ function getInputTriangles() {
     } else
         return JSON.parse(httpReq.response); 
 } // end get input triangles
+
+//get the input boxex from the standard class URL
+// function getInputBoxes() {
+//     const INPUT_BOXES_URL = 
+//         "https://ncsucgclass.github.io/prog1/boxes.json";
+        
+//     // load the boxes file
+//     var httpReq = new XMLHttpRequest(); // a new http request
+//     httpReq.open("GET",INPUT_BOXES_URL,false); // init the request
+//     httpReq.send(null); // send the request
+//     var startTime = Date.now();
+//     while ((httpReq.status !== 200) && (httpReq.readyState !== XMLHttpRequest.DONE)) {
+//         if ((Date.now()-startTime) > 3000)
+//             break;
+//     } // until its loaded or we time out after three seconds
+//     if ((httpReq.status !== 200) || (httpReq.readyState !== XMLHttpRequest.DONE)) {
+//         console.log*("Unable to open input boxes file!");
+//         return String.null;
+//     } else
+//         return JSON.parse(httpReq.response); 
+// } // end get input boxes
+
+// put random points in the ellipsoids from the class github
+// function drawRandPixelsInInputEllipsoids(context) {
+//     var inputEllipsoids = getInputEllipsoids();
+//     var w = context.canvas.width;
+//     var h = context.canvas.height;
+//     var imagedata = context.createImageData(w,h);
+//     const PIXEL_DENSITY = 0.1;
+//     var numCanvasPixels = (w*h)*PIXEL_DENSITY; 
+    
+//     if (inputEllipsoids != String.null) { 
+//         var x = 0; var y = 0; // pixel coord init
+//         var cx = 0; var cy = 0; // init center x and y coord
+//         var ellipsoidXRadius = 0; // init ellipsoid x radius
+//         var ellipsoidYRadius = 0; // init ellipsoid y radius
+//         var numEllipsoidPixels = 0; // init num pixels in ellipsoid
+//         var c = new Color(0,0,0,0); // init the ellipsoid color
+//         var n = inputEllipsoids.length; // the number of input ellipsoids
+//         //console.log("number of ellipses: " + n);
+
+//         // Loop over the ellipsoids, draw rand pixels in each
+//         for (var e=0; e<n; e++) {
+//             cx = w*inputEllipsoids[e].x; // ellipsoid center x
+//             cy = h*inputEllipsoids[e].y; // ellipsoid center y
+//             ellipsoidXRadius = Math.round(w*inputEllipsoids[e].a); // x radius
+//             ellipsoidYRadius = Math.round(h*inputEllipsoids[e].b); // y radius
+//             numEllipsoidPixels = ellipsoidXRadius*ellipsoidYRadius*Math.PI; // projected ellipsoid area
+//             numEllipsoidPixels *= PIXEL_DENSITY; // percentage of ellipsoid area to render to pixels
+//             numEllipsoidPixels = Math.round(numEllipsoidPixels);
+//             //console.log("ellipsoid x radius: "+ellipsoidXRadius);
+//             //console.log("ellipsoid y radius: "+ellipsoidYRadius);
+//             //console.log("num ellipsoid pixels: "+numEllipsoidPixels);
+//             c.change(
+//                 inputEllipsoids[e].diffuse[0]*255,
+//                 inputEllipsoids[e].diffuse[1]*255,
+//                 inputEllipsoids[e].diffuse[2]*255,
+//                 255); // ellipsoid diffuse color
+//             for (var p=0; p<numEllipsoidPixels; p++) {
+//                 do {
+//                     x = Math.random()*2 - 1; // in unit square 
+//                     y = Math.random()*2 - 1; // in unit square
+//                 } while (Math.sqrt(x*x + y*y) > 1) // a circle is also an ellipse
+//                 drawPixel(imagedata,
+//                     cx+Math.round(x*ellipsoidXRadius),
+//                     cy+Math.round(y*ellipsoidYRadius),c);
+//                 //console.log("color: ("+c.r+","+c.g+","+c.b+")");
+//                 //console.log("x: "+Math.round(w*inputEllipsoids[e].x));
+//                 //console.log("y: "+Math.round(h*inputEllipsoids[e].y));
+//             } // end for pixels in ellipsoid
+//         } // end for ellipsoids
+//         context.putImageData(imagedata, 0, 0);
+//     } // end if ellipsoids found
+// } // end draw rand pixels in input ellipsoids
+
+// draw 2d projections read from the JSON file at class github
+// function drawInputEllipsoidsUsingArcs(context) {
+//     var inputEllipsoids = getInputEllipsoids();
+    
+    
+//     if (inputEllipsoids != String.null) { 
+//         var c = new Color(0,0,0,0); // the color at the pixel: black
+//         var w = context.canvas.width;
+//         var h = context.canvas.height;
+//         var n = inputEllipsoids.length; 
+//         //console.log("number of ellipsoids: " + n);
+
+//         // Loop over the ellipsoids, draw each in 2d
+//         for (var e=0; e<n; e++) {
+//             context.fillStyle = 
+//                 "rgb(" + Math.floor(inputEllipsoids[e].diffuse[0]*255)
+//                 +","+ Math.floor(inputEllipsoids[e].diffuse[1]*255)
+//                 +","+ Math.floor(inputEllipsoids[e].diffuse[2]*255) +")"; // diffuse color
+//             context.save(); // remember previous (non-) scale
+//             context.scale(1, inputEllipsoids[e].b/inputEllipsoids[e].a); // scale by ellipsoid ratio 
+//             context.beginPath();
+//             context.arc(
+//                 Math.round(w*inputEllipsoids[e].x),
+//                 Math.round(h*inputEllipsoids[e].y),
+//                 Math.round(w*inputEllipsoids[e].a),
+//                 0,2*Math.PI);
+//             context.restore(); // undo scale before fill so stroke width unscaled
+//             context.fill();
+//             //console.log(context.fillStyle);
+//             //console.log("x: "+Math.round(w*inputEllipsoids[e].x));
+//             //console.log("y: "+Math.round(h*inputEllipsoids[e].y));
+//             //console.log("a: "+Math.round(w*inputEllipsoids[e].a));
+//             //console.log("b: "+Math.round(h*inputEllipsoids[e].b));
+//         } // end for ellipsoids
+//     } // end if ellipsoids found
+// } // end draw input ellipsoids
 
 //put random points in the triangles from the class github
 function drawRandPixelsInInputTriangles(context) {
@@ -186,6 +318,7 @@ function drawRandPixelsInInputTriangles(context) {
     } // end if triangle file found
 } // end draw rand pixels in input triangles
 
+//draw 2d projections traingle from the JSON file at class github
 function drawInputTrainglesUsingPaths(context) {
     var inputTriangles = getInputTriangles();
     
@@ -231,171 +364,99 @@ function drawInputTrainglesUsingPaths(context) {
     } // end if triangle files found
 } // end draw input triangles
 
-// Function to render unlit triangles using ray casting
-// function drawRayCastedTriangles(context) {
-//     var inputTriangles = getInputTriangles();
+// put random points in the boxes from the class github
+// function drawRandPixelsInInputBoxes(context) {
+//     var inputBoxes = getInputBoxes();
+//     var w = context.canvas.width;
+//     var h = context.canvas.height;
+//     var imagedata = context.createImageData(w,h);
+//     const PIXEL_DENSITY = 0.1;
+//     var numCanvasPixels = (w*h)*PIXEL_DENSITY; 
     
-//     if (inputTriangles != null) {
-//         var w = context.canvas.width;
-//         var h = context.canvas.height;
-        
-//         var depthBuffer = new Array(w * h).fill(Infinity);
-//         var imagedata = context.createImageData(w, h);
-        
-//         inputTriangles.forEach(file => {
-//             file.triangles.forEach(triangle => {
-//                 var vertex1 = file.vertices[triangle[0]];
-//                 var vertex2 = file.vertices[triangle[1]];
-//                 var vertex3 = file.vertices[triangle[2]];
-                
-//                 // Convert to screen coordinates
-//                 var v1 = [Math.round(w * vertex1[0]), Math.round(h * vertex1[1]), vertex1[2]];
-//                 var v2 = [Math.round(w * vertex2[0]), Math.round(h * vertex2[1]), vertex2[2]];
-//                 var v3 = [Math.round(w * vertex3[0]), Math.round(h * vertex3[1]), vertex3[2]];
+//     if (inputBoxes != String.null) { 
+// 	    var x  = 0; var y  = 0; // pixel coord init
+//         var lx = 0; var rx = 0; // input lx, rx from boxes.json
+//         var by = 0; var ty = 0; // input by, ty from boxes.json
+//         var fz = 0; var rz = 0; // input fz, rz from boxes.json
+//         var numBoxPixels = 0; // init num pixels in boxes
+//         var c = new Color(0,0,0,0); // init the box color
+//         var n = inputBoxes.length; // the number of input boxes
+//         //console.log("number of ellipses: " + n);
 
-//                 // Clip the triangle against the canvas
-//                 var clippedTriangle = clipTriangle(v1, v2, v3, w, h);
-                
-//                 // If the triangle is valid after clipping
-//                 if (clippedTriangle.length > 0) {
-//                     var color = {
-//                         r: file.material.diffuse[0] * 255,
-//                         g: file.material.diffuse[1] * 255,
-//                         b: file.material.diffuse[2] * 255,
-//                         a: 255
-//                     };
-                    
-//                     clippedTriangle.forEach(clip => {
-//                         rasterizeTriangle(clip[0], clip[1], clip[2], color, depthBuffer, imagedata, w, h);
-//                     });
-//                 }
-//             });
-//         });
-        
+//         // Loop over the ellipsoids, draw rand pixels in each
+//         for (var b=0; b<n; b++) {
+// 			// input lx,rx,by,ty on canvas
+// 			lx = w*inputBoxes[b].lx;
+// 			rx = w*inputBoxes[b].rx;
+// 			by = h*inputBoxes[b].by;
+// 			ty = h*inputBoxes[b].ty;           
+			
+//             numBoxesPixels  = (rx-lx)*(ty-by); // projected box area 
+//             numBoxesPixels *= PIXEL_DENSITY;  // percentage of box area to render to pixels
+//             numBoxesPixels  = Math.round(numBoxesPixels);
+           
+//             //console.log("num box pixels: "+numBoxesPixels);
+            
+// 			c.change(
+//                 inputBoxes[b].diffuse[0]*255,
+//                 inputBoxes[b].diffuse[1]*255,
+//                 inputBoxes[b].diffuse[2]*255,
+//                 255); // box diffuse color
+//             for (var p=0; p<numBoxesPixels; p++) {
+//                 do {
+//                     x = Math.floor(Math.random()*w); 
+//                     y = Math.floor(Math.random()*h); 
+//                 } while ( x<lx || x>rx || y>ty || y<by ) // inside the projection
+//                 drawPixel(imagedata,x,y,c);
+//                 //console.log("color: ("+c.r+","+c.g+","+c.b+")");
+//                 //console.log("x: " + x);
+//                 //console.log("y: " + y);
+//             } // end for pixels in box
+//         } // end for boxes
 //         context.putImageData(imagedata, 0, 0);
-//     }
-// }
+//     } // end if boxes found
+// } // end draw rand pixels in input boxes
 
-// // Function to clip a triangle against the canvas boundaries
-// function clipTriangle(v1, v2, v3, canvasWidth, canvasHeight) {
-//     var clipped = [];
+//draw 2d projections boxes from the JSON file at class github
+// function drawInputBoxesUsingPaths(context) {
+//     var inputBoxes = getInputBoxes();
+//     var n = inputBoxes.length; // the number of input boxes
+	
+//     if (inputBoxes != String.null) { 
+// 		var w = context.canvas.width;
+//         var h = context.canvas.height;
+//         var c = new Color(0,0,0,0); // the color at the pixel: black
+//         var x  = 0; var y  = 0; // pixel coord init
+//         var lx = 0; var rx = 0; // input lx, rx from boxes.json
+//         var by = 0; var ty = 0; // input by, ty from boxes.json
+//         var fz = 0; var rz = 0; // input fz, rz from boxes.json
+//         //console.log("number of files: " + n);
 
-//     // Implement the Sutherland-Hodgman algorithm or similar for clipping
-//     var vertices = [v1, v2, v3];
-//     var edges = [
-//         [0, 0, canvasWidth, 0],    // top edge
-//         [canvasWidth, 0, canvasWidth, canvasHeight], // right edge
-//         [canvasWidth, canvasHeight, 0, canvasHeight], // bottom edge
-//         [0, canvasHeight, 0, 0]     // left edge
-//     ];
-    
-//     for (let edge of edges) {
-//         var newVertices = [];
-//         var [x1, y1, x2, y2] = edge;
+//         // Loop over the input files
+//         for (var b=0; b<n; b++) {
+				
+// 			// input lx,rx,by,ty on canvas
+// 			lx = w*inputBoxes[b].lx;
+// 			rx = w*inputBoxes[b].rx;
+// 			by = h*inputBoxes[b].by;
+// 			ty = h*inputBoxes[b].ty; 
+        		
+//             context.fillStyle = 
+//             	"rgb(" + Math.floor(inputBoxes[b].diffuse[0]*255)
+//             	+","+ Math.floor(inputBoxes[b].diffuse[1]*255)
+//             	+","+ Math.floor(inputBoxes[b].diffuse[2]*255) +")"; // diffuse color
+            
+//             var path=new Path2D();
+//             path.moveTo(lx,ty);
+//             path.lineTo(lx,by);
+//             path.lineTo(rx,by);
+// 			path.lineTo(rx,ty);
+//             path.closePath();
+//             context.fill(path);
 
-//         for (let i = 0; i < vertices.length; i++) {
-//             var current = vertices[i];
-//             var prev = vertices[(i + vertices.length - 1) % vertices.length];
-
-//             // Check if current vertex is inside the edge
-//             if (isInsideEdge(current, x1, y1, x2, y2)) {
-//                 newVertices.push(current);
-//             }
-
-//             // Check if edge from prev to current intersects with the edge
-//             if (isInsideEdge(prev, x1, y1, x2, y2) !== isInsideEdge(current, x1, y1, x2, y2)) {
-//                 var intersection = getIntersection(prev, current, x1, y1, x2, y2);
-//                 if (intersection) {
-//                     newVertices.push(intersection);
-//                 }
-//             }
-//         }
-
-//         vertices = newVertices;
-//         if (vertices.length === 0) return []; // no visible vertices
-//     }
-
-//     // Form triangles from the remaining vertices
-//     for (let i = 1; i < vertices.length - 1; i++) {
-//         clipped.push([vertices[0], vertices[i], vertices[i + 1]]);
-//     }
-
-//     return clipped;
-// }
-
-// // Function to check if a vertex is inside a given edge
-// function isInsideEdge(vertex, x1, y1, x2, y2) {
-//     var [x, y] = vertex;
-//     return (x >= Math.min(x1, x2) && x <= Math.max(x1, x2) &&
-//             y >= Math.min(y1, y2) && y <= Math.max(y1, y2));
-// }
-
-// // Function to get the intersection of a line segment with an edge
-// function getIntersection(p1, p2, x1, y1, x2, y2) {
-//     var [xA, yA] = p1;
-//     var [xB, yB] = p2;
-
-//     // Line segment AB represented as a1x + b1y = c1
-//     var a1 = yB - yA;
-//     var b1 = xA - xB;
-//     var c1 = a1 * xA + b1 * yA;
-
-//     // Line segment CD represented as a2x + b2y = c2
-//     var a2 = y2 - y1;
-//     var b2 = x1 - x2;
-//     var c2 = a2 * x1 + b2 * y1;
-
-//     var determinant = a1 * b2 - a2 * b1;
-
-//     if (determinant === 0) return null; // Lines are parallel
-
-//     var x = (b2 * c1 - b1 * c2) / determinant;
-//     var y = (a1 * c2 - a2 * c1) / determinant;
-
-//     return [x, y];
-// }
-
-// // Rasterize the triangle using Barycentric coordinates and depth buffer
-// function rasterizeTriangle(v1, v2, v3, color, depthBuffer, imagedata, w, h) {
-//     // Compute bounding box for the triangle
-//     var minX = Math.max(Math.min(v1[0], v2[0], v3[0]), 0);
-//     var maxX = Math.min(Math.max(v1[0], v2[0], v3[0]), w - 1);
-//     var minY = Math.max(Math.min(v1[1], v2[1], v3[1]), 0);
-//     var maxY = Math.min(Math.max(v1[1], v2[1], v3[1]), h - 1);
-
-//     // Loop through all pixels in the bounding box
-//     for (var x = minX; x <= maxX; x++) {
-//         for (var y = minY; y <= maxY; y++) {
-//             // Use Barycentric coordinates to test if the point is inside the triangle
-//             var barycentric = getBarycentricCoordinates(x, y, v1, v2, v3);
-//             if (barycentric[0] >= 0 && barycentric[1] >= 0 && barycentric[2] >= 0) {
-//                 // Compute depth (z-value) for depth testing
-//                 var z = barycentric[0] * v1[2] + barycentric[1] * v2[2] + barycentric[2] * v3[2];
-
-//                 // Check depth buffer
-//                 var pixelIndex = (y * w + x);
-//                 if (z < depthBuffer[pixelIndex]) {
-//                     depthBuffer[pixelIndex] = z;  // Update depth buffer
-//                     drawPixel(imagedata, x, y, color);  // Update color buffer
-//                 }
-//             }
-//         }
-//     }
-// }
-
-// // Get Barycentric coordinates of point (px, py) with respect to the triangle (v1, v2, v3)
-// function getBarycentricCoordinates(px, py, v1, v2, v3) {
-//     var detT = (v2[1] - v3[1]) * (v1[0] - v3[0]) + (v3[0] - v2[0]) * (v1[1] - v3[1]);
-//     if (detT === 0) return [-1, -1, -1];  // Prevent divide by zero for degenerate triangles
-//     var lambda1 = ((v2[1] - v3[1]) * (px - v3[0]) + (v3[0] - v2[0]) * (py - v3[1])) / detT;
-//     var lambda2 = ((v3[1] - v1[1]) * (px - v3[0]) + (v1[0] - v3[0]) * (py - v3[1])) / detT;
-//     var lambda3 = 1 - lambda1 - lambda2;
-//     return [lambda1, lambda2, lambda3];
-// }
-
-// The rest of your utility functions remain the same, including the Color class and drawPixel function.
-
-
+//         } // end for files
+//     } // end if box files found
+// } // end draw input boxes
 
 /* main -- here is where execution begins after window load */
 
@@ -418,11 +479,9 @@ function main() {
     //drawRandPixelsInInputTriangles(context);
       // shows how to draw pixels and read input file
     
-    drawInputTrianglesUsingPaths(context);
+    drawInputTrainglesUsingPaths(context);
       // shows how to read input file, but not how to draw pixels
-
-    //drawRayCastedTriangles(context);
-	
+    
     //drawRandPixelsInInputBoxes(context);
       // shows how to draw pixels and read input file
     
