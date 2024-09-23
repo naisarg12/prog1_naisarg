@@ -326,7 +326,7 @@ function drawInputTrianglesUsingPaths(context) {
         var w = context.canvas.width;
         var h = context.canvas.height;
 
-        // Find the min and max coordinates to normalize the vertices
+        // Initialize min and max for x and y coordinates
         var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
         
         // Loop over all vertices to find the bounds
@@ -338,8 +338,15 @@ function drawInputTrianglesUsingPaths(context) {
                 if (vertex[1] > maxY) maxY = vertex[1];
             });
         });
-        
-        // Normalize the vertices so they fit within the canvas
+
+        // Add padding to avoid triangles at the edges
+        const padding = 0.05; // 5% padding
+        minX -= (maxX - minX) * padding;
+        maxX += (maxX - minX) * padding;
+        minY -= (maxY - minY) * padding;
+        maxY += (maxY - minY) * padding;
+
+        // Calculate scaling factors
         var scaleX = w / (maxX - minX);
         var scaleY = h / (maxY - minY);
 
