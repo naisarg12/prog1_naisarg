@@ -339,10 +339,14 @@ function drawInputTrianglesUsingPaths(context) {
             });
         });
 
-        // Normalize the vertices so they fit within the canvas
+        // Normalize the vertices so they fit within the canvas using uniform scaling
         var scaleX = w / (maxX - minX);
         var scaleY = h / (maxY - minY);
-        
+        var scale = Math.min(scaleX, scaleY); // Uniform scaling to avoid distortion
+
+        var offsetX = (w - (maxX - minX) * scale) / 2;
+        var offsetY = (h - (maxY - minY) * scale) / 2;
+
         // Loop over the input files
         inputTriangles.forEach(file => {
             file.triangles.forEach(triangle => {
@@ -351,9 +355,9 @@ function drawInputTrianglesUsingPaths(context) {
                 var vertex3 = file.vertices[triangle[2]];
 
                 // Apply normalization to vertex positions, ignoring Z
-                var v1 = [(vertex1[0] - minX) * scaleX, (vertex1[1] - minY) * scaleY];
-                var v2 = [(vertex2[0] - minX) * scaleX, (vertex2[1] - minY) * scaleY];
-                var v3 = [(vertex3[0] - minX) * scaleX, (vertex3[1] - minY) * scaleY];
+                var v1 = [(vertex1[0] - minX) * scale + offsetX, h - ((vertex1[1] - minY) * scale + offsetY)];
+                var v2 = [(vertex2[0] - minX) * scale + offsetX, h - ((vertex2[1] - minY) * scale + offsetY)];
+                var v3 = [(vertex3[0] - minX) * scale + offsetX, h - ((vertex3[1] - minY) * scale + offsetY)];
 
                 // Set the color for the triangle
                 context.fillStyle = `rgb(
