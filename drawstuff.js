@@ -326,8 +326,8 @@ function drawInputTrianglesUsingPaths(context) {
         var w = context.canvas.width;
         var h = context.canvas.height;
 
-        // Find the min and max coordinates to normalize the vertices (including Z)
-        var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity, minZ = Infinity, maxZ = -Infinity;
+        // Find the min and max coordinates to normalize the vertices (ignoring Z)
+        var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
 
         // Loop over all vertices to find the bounds
         inputTriangles.forEach(file => {
@@ -336,16 +336,13 @@ function drawInputTrianglesUsingPaths(context) {
                 if (vertex[0] > maxX) maxX = vertex[0];
                 if (vertex[1] < minY) minY = vertex[1];
                 if (vertex[1] > maxY) maxY = vertex[1];
-                if (vertex[2] < minZ) minZ = vertex[2];
-                if (vertex[2] > maxZ) maxZ = vertex[2];
             });
         });
 
         // Normalize the vertices so they fit within the canvas
         var scaleX = w / (maxX - minX);
         var scaleY = h / (maxY - minY);
-        var scaleZ = Math.min(scaleX, scaleY); // Use Z to modify scale for depth effect
-
+        
         // Loop over the input files
         inputTriangles.forEach(file => {
             file.triangles.forEach(triangle => {
@@ -353,10 +350,10 @@ function drawInputTrianglesUsingPaths(context) {
                 var vertex2 = file.vertices[triangle[1]];
                 var vertex3 = file.vertices[triangle[2]];
 
-                // Apply normalization and scaling to vertex positions, using Z as a scale factor for depth
-                var v1 = [(vertex1[0] - minX) * scaleX * (1 - vertex1[2] / maxZ), h - (vertex1[1] - minY) * scaleY * (1 - vertex1[2] / maxZ)];
-                var v2 = [(vertex2[0] - minX) * scaleX * (1 - vertex2[2] / maxZ), h - (vertex2[1] - minY) * scaleY * (1 - vertex2[2] / maxZ)];
-                var v3 = [(vertex3[0] - minX) * scaleX * (1 - vertex3[2] / maxZ), h - (vertex3[1] - minY) * scaleY * (1 - vertex3[2] / maxZ)];
+                // Apply normalization to vertex positions, ignoring Z
+                var v1 = [(vertex1[0] - minX) * scaleX, (vertex1[1] - minY) * scaleY];
+                var v2 = [(vertex2[0] - minX) * scaleX, (vertex2[1] - minY) * scaleY];
+                var v3 = [(vertex3[0] - minX) * scaleX, (vertex3[1] - minY) * scaleY];
 
                 // Set the color for the triangle
                 context.fillStyle = `rgb(
