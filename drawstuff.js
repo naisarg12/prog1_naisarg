@@ -319,50 +319,68 @@ function drawRandPixelsInInputTriangles(context) {
 } // end draw rand pixels in input triangles
 
 //draw 2d projections traingle from the JSON file at class github
-function drawInputTrainglesUsingPaths(context) {
+function drawInputTrianglesUsingPaths(context) {
     var inputTriangles = getInputTriangles();
     
     if (inputTriangles != String.null) { 
-        var c = new Color(0,0,0,0); // the color at the pixel: black
         var w = context.canvas.width;
         var h = context.canvas.height;
-        var n = inputTriangles.length; 
-        //console.log("number of files: " + n);
+
+        // Initialize min and max for x and y coordinates
+        var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        
+        // Loop over all vertices to find the bounds
+        inputTriangles.forEach(file => {
+            file.vertices.forEach(vertex => {
+                if (vertex[0] < minX) minX = vertex[0];
+                if (vertex[0] > maxX) maxX = vertex[0];
+                if (vertex[1] < minY) minY = vertex[1];
+                if (vertex[1] > maxY) maxY = vertex[1];
+            });
+        });
+
+        // Add padding to avoid triangles at the edges
+        const padding = 0.05; // 5% padding
+        minX -= (maxX - minX) * padding;
+        maxX += (maxX - minX) * padding;
+        minY -= (maxY - minY) * padding;
+        maxY += (maxY - minY) * padding;
+
+        // Calculate scaling factors
+        var scaleX = w / (maxX - minX);
+        var scaleY = h / (maxY - minY);
 
         // Loop over the input files
-        for (var f=0; f<n; f++) {
-        	var tn = inputTriangles[f].triangles.length;
-        	//console.log("number of triangles in this files: " + tn);
-        	
-        	// Loop over the triangles, draw each in 2d
-        	for(var t=0; t<tn; t++){
-        		var vertex1 = inputTriangles[f].triangles[t][0];
-        		var vertex2 = inputTriangles[f].triangles[t][1];
-        		var vertex3 = inputTriangles[f].triangles[t][2];
+        inputTriangles.forEach(file => {
+            file.triangles.forEach(triangle => {
+                var vertex1 = file.vertices[triangle[0]];
+                var vertex2 = file.vertices[triangle[1]];
+                var vertex3 = file.vertices[triangle[2]];
 
-        		var vertexPos1 = inputTriangles[f].vertices[vertex1];
-        		var vertexPos2 = inputTriangles[f].vertices[vertex2];
-        		var vertexPos3 = inputTriangles[f].vertices[vertex3];
-        		//console.log("vertexPos1 " + vertexPos1);
-        		//console.log("vertexPos2 " + vertexPos2);
-        		//console.log("vertexPos3 " + vertexPos3);
-        		
-            	context.fillStyle = 
-            	    "rgb(" + Math.floor(inputTriangles[f].material.diffuse[0]*255)
-            	    +","+ Math.floor(inputTriangles[f].material.diffuse[1]*255)
-            	    +","+ Math.floor(inputTriangles[f].material.diffuse[2]*255) +")"; // diffuse color
-            
-            	var path=new Path2D();
-            	path.moveTo(w*vertexPos1[0],h*vertexPos1[1]);
-            	path.lineTo(w*vertexPos2[0],h*vertexPos2[1]);
-            	path.lineTo(w*vertexPos3[0],h*vertexPos3[1]);
-            	path.closePath();
-            	context.fill(path);
+                // Apply normalization to vertex positions
+                var v1 = [(vertex1[0] - minX) * scaleX, (vertex1[1] - minY) * scaleY];
+                var v2 = [(vertex2[0] - minX) * scaleX, (vertex2[1] - minY) * scaleY];
+                var v3 = [(vertex3[0] - minX) * scaleX, (vertex3[1] - minY) * scaleY];
 
-        	} // end for triangles
-        } // end for files
-    } // end if triangle files found
-} // end draw input triangles
+                // Set the color for the triangle
+                context.fillStyle = `rgb(
+                    ${Math.floor(file.material.diffuse[0] * 255)},
+                    ${Math.floor(file.material.diffuse[1] * 255)},
+                    ${Math.floor(file.material.diffuse[2] * 255)}
+                )`;
+
+                // Draw the triangle
+                var path = new Path2D();
+                path.moveTo(v1[0], v1[1]);
+                path.lineTo(v2[0], v2[1]);
+                path.lineTo(v3[0], v3[1]);
+                path.closePath();
+                context.fill(path);
+            });
+        });
+    }
+}
+
 
 // put random points in the boxes from the class github
 function drawRandPixelsInInputBoxes(context) {
