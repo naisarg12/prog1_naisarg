@@ -377,7 +377,7 @@ function drawRandPixelsInInputTriangles(context) {
 function drawRayCastedTriangles(context) {
     var inputTriangles = getInputTriangles();
     
-    if (inputTriangles != String.null) { 
+    if (inputTriangles != String.null) {
         var w = context.canvas.width;
         var h = context.canvas.height;
         
@@ -398,12 +398,12 @@ function drawRayCastedTriangles(context) {
                 var v3 = [Math.round(w * vertex3[0]), Math.round(h * vertex3[1]), vertex3[2]];
 
                 // Get the diffuse color
-                var color = new Color(
-                    file.material.diffuse[0] * 255,
-                    file.material.diffuse[1] * 255,
-                    file.material.diffuse[2] * 255,
-                    255
-                );
+                var color = {
+                    r: file.material.diffuse[0] * 255,
+                    g: file.material.diffuse[1] * 255,
+                    b: file.material.diffuse[2] * 255,
+                    a: 255
+                };
                 
                 // Rasterize the triangle using barycentric coordinates
                 rasterizeTriangle(v1, v2, v3, color, depthBuffer, imagedata, w, h);
@@ -446,6 +446,7 @@ function rasterizeTriangle(v1, v2, v3, color, depthBuffer, imagedata, w, h) {
 // Get Barycentric coordinates of point (px, py) with respect to the triangle (v1, v2, v3)
 function getBarycentricCoordinates(px, py, v1, v2, v3) {
     var detT = (v2[1] - v3[1]) * (v1[0] - v3[0]) + (v3[0] - v2[0]) * (v1[1] - v3[1]);
+    if (detT === 0) return [-1, -1, -1];  // Prevent divide by zero for degenerate triangles
     var lambda1 = ((v2[1] - v3[1]) * (px - v3[0]) + (v3[0] - v2[0]) * (py - v3[1])) / detT;
     var lambda2 = ((v3[1] - v1[1]) * (px - v3[0]) + (v1[0] - v3[0]) * (py - v3[1])) / detT;
     var lambda3 = 1 - lambda1 - lambda2;
