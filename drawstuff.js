@@ -326,22 +326,20 @@ function drawInputTrianglesUsingPaths(context) {
         var w = context.canvas.width;
         var h = context.canvas.height;
 
-        // Find the min and max coordinates to normalize the vertices
-        var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        // Find the min coordinates to shift the vertices into the visible domain
+        var minX = Infinity, minY = Infinity;
         
         // Loop over all vertices to find the bounds
         inputTriangles.forEach(file => {
             file.vertices.forEach(vertex => {
                 if (vertex[0] < minX) minX = vertex[0];
-                if (vertex[0] > maxX) maxX = vertex[0];
                 if (vertex[1] < minY) minY = vertex[1];
-                if (vertex[1] > maxY) maxY = vertex[1];
             });
         });
         
-        // Normalize the vertices so they fit within the canvas
-        var scaleX = w / (maxX - minX);
-        var scaleY = h / (maxY - minY);
+        // Calculate the translation offsets
+        var translateX = -minX; // Shift everything right by -minX
+        var translateY = -minY; // Shift everything down by -minY
 
         // Loop over the input files
         inputTriangles.forEach(file => {
@@ -350,10 +348,10 @@ function drawInputTrianglesUsingPaths(context) {
                 var vertex2 = file.vertices[triangle[1]];
                 var vertex3 = file.vertices[triangle[2]];
 
-                // Apply normalization to vertex positions
-                var v1 = [(vertex1[0] - minX) * scaleX, (vertex1[1] - minY) * scaleY];
-                var v2 = [(vertex2[0] - minX) * scaleX, (vertex2[1] - minY) * scaleY];
-                var v3 = [(vertex3[0] - minX) * scaleX, (vertex3[1] - minY) * scaleY];
+                // Apply translation to vertex positions
+                var v1 = [vertex1[0] + translateX, vertex1[1] + translateY];
+                var v2 = [vertex2[0] + translateX, vertex2[1] + translateY];
+                var v3 = [vertex3[0] + translateX, vertex3[1] + translateY];
 
                 // Set the color for the triangle
                 context.fillStyle = `rgb(
