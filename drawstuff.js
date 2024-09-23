@@ -326,6 +326,9 @@ function drawInputTrianglesUsingPaths(context) {
         var w = context.canvas.width;
         var h = context.canvas.height;
 
+        // Set up the depth buffer (initialized to infinity)
+        var depthBuffer = new Array(w * h).fill(Infinity);
+
         // Find the min and max coordinates to normalize the vertices (ignoring Z)
         var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
 
@@ -339,7 +342,7 @@ function drawInputTrianglesUsingPaths(context) {
             });
         });
 
-        // Normalize the vertices so they fit within the canvas using uniform scaling
+        // Normalize the vertices to fit within the canvas using uniform scaling
         var scaleX = w / (maxX - minX);
         var scaleY = h / (maxY - minY);
         var scale = Math.min(scaleX, scaleY); // Uniform scaling to avoid distortion
@@ -347,35 +350,67 @@ function drawInputTrianglesUsingPaths(context) {
         var offsetX = (w - (maxX - minX) * scale) / 2;
         var offsetY = (h - (maxY - minY) * scale) / 2;
 
-        // Loop over the input files
+        // Loop over the input files and render each triangle
         inputTriangles.forEach(file => {
             file.triangles.forEach(triangle => {
                 var vertex1 = file.vertices[triangle[0]];
                 var vertex2 = file.vertices[triangle[1]];
                 var vertex3 = file.vertices[triangle[2]];
 
-                // Apply normalization to vertex positions, ignoring Z
-                var v1 = [(vertex1[0] - minX) * scale + offsetX, h - ((vertex1[1] - minY) * scale + offsetY)];
-                var v2 = [(vertex2[0] - minX) * scale + offsetX, h - ((vertex2[1] - minY) * scale + offsetY)];
-                var v3 = [(vertex3[0] - minX) * scale + offsetX, h - ((vertex3[1] - minY) * scale + offsetY)];
+                // Normalize vertex positions, ignoring Z
+                var v1 = [(vertex1[0] - minX) * scale + offsetX, h - ((vertex1[1] - minY) * scale + offsetY), vertex1[2]];
+                var v2 = [(vertex2[0] - minX) * scale + offsetX, h - ((vertex2[1] - minY) * scale + offsetY), vertex2[2]];
+                var v3 = [(vertex3[0] - minX) * scale + offsetX, h - ((vertex3[1] - minY) * scale + offsetY), vertex3[2]];
 
-                // Set the color for the triangle
-                context.fillStyle = `rgb(
+                // Triangle's diffuse color
+                var color = `rgb(
                     ${Math.floor(file.material.diffuse[0] * 255)},
                     ${Math.floor(file.material.diffuse[1] * 255)},
                     ${Math.floor(file.material.diffuse[2] * 255)}
                 )`;
 
-                // Draw the triangle
-                var path = new Path2D();
-                path.moveTo(v1[0], v1[1]);
-                path.lineTo(v2[0], v2[1]);
-                path.lineTo(v3[0], v3[1]);
-                path.closePath();
-                context.fill(path);
+                // Loop over each pixel in the canvas
+                for (var y = 0; y < h; y++) {
+                    for (var x = 0; x < w; x++) {
+                        // Check if the pixel (x, y) is inside the triangle using barycentric coordinates
+                        var bary = computeBarycentric(x, y, v1, v2, v3);
+
+                        if (bary.inside) {
+                            // Compute the depth (z-value) using barycentric coordinates
+                            var depth = bary.u * v1[2] + bary.v * v2[2] + bary.w * v3[2];
+
+                            // Check depth buffer
+                            var index = y * w + x;
+                            if (depth < depthBuffer[index]) {
+                                // Update the depth buffer
+                                depthBuffer[index] = depth;
+
+                                // Set the pixel color to the triangle's diffuse color
+                                context.fillStyle = color;
+                                context.fillRect(x, y, 1, 1); // Fill 1x1 pixel
+                            }
+                        }
+                    }
+                }
             });
         });
     }
+}
+
+// Helper function to compute barycentric coordinates
+function computeBarycentric(px, py, v1, v2, v3) {
+    var denominator = (v2[1] - v3[1]) * (v1[0] - v3[0]) + (v3[0] - v2[0]) * (v1[1] - v3[1]);
+
+    var u = ((v2[1] - v3[1]) * (px - v3[0]) + (v3[0] - v2[0]) * (py - v3[1])) / denominator;
+    var v = ((v3[1] - v1[1]) * (px - v3[0]) + (v1[0] - v3[0]) * (py - v3[1])) / denominator;
+    var w = 1 - u - v;
+
+    return {
+        u: u,
+        v: v,
+        w: w,
+        inside: (u >= 0 && v >= 0 && w >= 0) // Check if the point is inside the triangle
+    };
 }
 
 // put random points in the boxes from the class github
