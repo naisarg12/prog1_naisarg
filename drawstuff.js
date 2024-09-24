@@ -110,7 +110,7 @@ function getInputEllipsoids() {
 //get the input triangles from the standard class URL
 function getInputTriangles() {
     const INPUT_TRIANGLES_URL = 
-        "https://raw.githubusercontent.com/naisarg12/prog1_naisarg/refs/heads/gh-pages/triangles_tree.json";
+        "https://ncsucgclass.github.io/prog1/triangles2.json";
         
     // load the triangles file
     var httpReq = new XMLHttpRequest(); // a new http request
@@ -489,7 +489,8 @@ function main() {
     
     //drawRandPixelsInInputTriangles(context);
       // shows how to draw pixels and read input file
-    canvas.width = window.innerWidth;
+    
+      canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
     context.fillStyle = "black"; // Set the fill color to black
