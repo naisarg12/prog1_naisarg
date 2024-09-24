@@ -110,7 +110,7 @@ function getInputEllipsoids() {
 //get the input triangles from the standard class URL
 function getInputTriangles() {
     const INPUT_TRIANGLES_URL = 
-        "https://ncsucgclass.github.io/prog1/triangles2.json";
+        "https://raw.githubusercontent.com/naisarg12/prog1_naisarg/refs/heads/gh-pages/triangles_tree.json";
         
     // load the triangles file
     var httpReq = new XMLHttpRequest(); // a new http request
@@ -326,9 +326,6 @@ function drawInputTrianglesUsingPaths(context) {
         var w = context.canvas.width;
         var h = context.canvas.height;
 
-        var lightPosition = [1, 1, 1]; // Define a light source position
-        var viewDirection = [0, 0, -1]; // Assuming a simple view direction
-
         // Find the min and max coordinates to normalize the vertices
         var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
         
@@ -347,9 +344,6 @@ function drawInputTrianglesUsingPaths(context) {
         var scaleY = h / (maxY - minY);
         var scale = Math.min(scaleX, scaleY); // Uniform scaling to avoid distortion
 
-        // Store triangles and their colors for depth sorting
-        var triangleData = [];
-
         // Loop over the input files
         inputTriangles.forEach(file => {
             file.triangles.forEach(triangle => {
@@ -357,70 +351,26 @@ function drawInputTrianglesUsingPaths(context) {
                 var vertex2 = file.vertices[triangle[1]];
                 var vertex3 = file.vertices[triangle[2]];
 
-                // Calculate the normal vector
-                var edge1 = [vertex2[0] - vertex1[0], vertex2[1] - vertex1[1], vertex2[2] - vertex1[2]];
-                var edge2 = [vertex3[0] - vertex1[0], vertex3[1] - vertex1[1], vertex3[2] - vertex1[2]];
-                var normal = [
-                    edge1[1] * edge2[2] - edge1[2] * edge2[1],
-                    edge1[2] * edge2[0] - edge1[0] * edge2[2],
-                    edge1[0] * edge2[1] - edge1[1] * edge2[0]
-                ];
-                
-                // Normalize the normal
-                var normalLength = Math.sqrt(normal[0]**2 + normal[1]**2 + normal[2]**2);
-                normal = normal.map(n => n / normalLength);
-                
-                // Calculate the centroid of the triangle
-                var centroid = [
-                    (vertex1[0] + vertex2[0] + vertex3[0]) / 3,
-                    (vertex1[1] + vertex2[1] + vertex3[1]) / 3,
-                    (vertex1[2] + vertex2[2] + vertex3[2]) / 3
-                ];
+                // Apply normalization and scaling to vertex positions
+                var v1 = [(vertex1[0] - minX) * scale, h - (vertex1[1] - minY) * scale]; // Flipping Y for correct orientation
+                var v2 = [(vertex2[0] - minX) * scale, h - (vertex2[1] - minY) * scale];
+                var v3 = [(vertex3[0] - minX) * scale, h - (vertex3[1] - minY) * scale];
 
-                // Compute light vector and view vector
-                var lightVector = [lightPosition[0] - centroid[0], lightPosition[1] - centroid[1], lightPosition[2] - centroid[2]];
-                var lightLength = Math.sqrt(lightVector[0]**2 + lightVector[1]**2 + lightVector[2]**2);
-                lightVector = lightVector.map(l => l / lightLength);
+                // Set the color for the triangle
+                context.fillStyle = `rgb(
+                    ${Math.floor(file.material.diffuse[0] * 255)},
+                    ${Math.floor(file.material.diffuse[1] * 255)},
+                    ${Math.floor(file.material.diffuse[2] * 255)}
+                )`;
 
-                // Calculate Blinn-Phong components
-                var ambient = file.material.ambient;
-                var diffuse = Math.max(0, normal[0] * lightVector[0] + normal[1] * lightVector[1] + normal[2] * lightVector[2]);
-                var specular = Math.pow(Math.max(0, normal[0] * (lightVector[0] + viewDirection[0]) +
-                                                      normal[1] * (lightVector[1] + viewDirection[1]) +
-                                                      normal[2] * (lightVector[2] + viewDirection[2])), 
-                                                      file.material.n);
-
-                // Compute the final color
-                var color = [
-                    Math.floor((ambient[0] + diffuse * file.material.diffuse[0] + specular * file.material.specular[0]) * 255),
-                    Math.floor((ambient[1] + diffuse * file.material.diffuse[1] + specular * file.material.specular[1]) * 255),
-                    Math.floor((ambient[2] + diffuse * file.material.diffuse[2] + specular * file.material.specular[2]) * 255)
-                ];
-
-                // Store triangle data for rendering later
-                triangleData.push({ vertices: [vertex1, vertex2, vertex3], color: color, depth: centroid[2] });
+                // Draw the triangle
+                var path = new Path2D();
+                path.moveTo(v1[0], v1[1]);
+                path.lineTo(v2[0], v2[1]);
+                path.lineTo(v3[0], v3[1]);
+                path.closePath();
+                context.fill(path);
             });
-        });
-
-        // Sort triangles by depth (simple back-to-front sorting)
-        triangleData.sort((a, b) => b.depth - a.depth);
-
-        // Draw the sorted triangles
-        triangleData.forEach(data => {
-            context.fillStyle = `rgb(${data.color[0]}, ${data.color[1]}, ${data.color[2]})`;
-
-            // Apply normalization and scaling to vertex positions
-            var v1 = [(data.vertices[0][0] - minX) * scale, h - (data.vertices[0][1] - minY) * scale];
-            var v2 = [(data.vertices[1][0] - minX) * scale, h - (data.vertices[1][1] - minY) * scale];
-            var v3 = [(data.vertices[2][0] - minX) * scale, h - (data.vertices[2][1] - minY) * scale];
-
-            // Draw the triangle
-            var path = new Path2D();
-            path.moveTo(v1[0], v1[1]);
-            path.lineTo(v2[0], v2[1]);
-            path.lineTo(v3[0], v3[1]);
-            path.closePath();
-            context.fill(path);
         });
     }
 }
@@ -539,8 +489,7 @@ function main() {
     
     //drawRandPixelsInInputTriangles(context);
       // shows how to draw pixels and read input file
-    
-      canvas.width = window.innerWidth;
+    canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
     context.fillStyle = "black"; // Set the fill color to black
