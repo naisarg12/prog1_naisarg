@@ -347,6 +347,9 @@ function drawInputTrianglesUsingPaths(context) {
         var scaleY = h / (maxY - minY);
         var scale = Math.min(scaleX, scaleY); // Uniform scaling to avoid distortion
 
+        // Store triangles and their colors for depth sorting
+        var triangleData = [];
+
         // Loop over the input files
         inputTriangles.forEach(file => {
             file.triangles.forEach(triangle => {
@@ -387,21 +390,37 @@ function drawInputTrianglesUsingPaths(context) {
                                                       normal[2] * (lightVector[2] + viewDirection[2])), 
                                                       file.material.n);
 
-                // Set the color for the triangle
-                context.fillStyle = `rgb(
-                    ${Math.floor((ambient[0] + diffuse * file.material.diffuse[0] + specular * file.material.specular[0]) * 255)},
-                    ${Math.floor((ambient[1] + diffuse * file.material.diffuse[1] + specular * file.material.specular[1]) * 255)},
-                    ${Math.floor((ambient[2] + diffuse * file.material.diffuse[2] + specular * file.material.specular[2]) * 255)}
-                )`;
+                // Compute the final color
+                var color = [
+                    Math.floor((ambient[0] + diffuse * file.material.diffuse[0] + specular * file.material.specular[0]) * 255),
+                    Math.floor((ambient[1] + diffuse * file.material.diffuse[1] + specular * file.material.specular[1]) * 255),
+                    Math.floor((ambient[2] + diffuse * file.material.diffuse[2] + specular * file.material.specular[2]) * 255)
+                ];
 
-                // Draw the triangle
-                var path = new Path2D();
-                path.moveTo(v1[0], v1[1]);
-                path.lineTo(v2[0], v2[1]);
-                path.lineTo(v3[0], v3[1]);
-                path.closePath();
-                context.fill(path);
+                // Store triangle data for rendering later
+                triangleData.push({ vertices: [vertex1, vertex2, vertex3], color: color, depth: centroid[2] });
             });
+        });
+
+        // Sort triangles by depth (simple back-to-front sorting)
+        triangleData.sort((a, b) => b.depth - a.depth);
+
+        // Draw the sorted triangles
+        triangleData.forEach(data => {
+            context.fillStyle = `rgb(${data.color[0]}, ${data.color[1]}, ${data.color[2]})`;
+
+            // Apply normalization and scaling to vertex positions
+            var v1 = [(data.vertices[0][0] - minX) * scale, h - (data.vertices[0][1] - minY) * scale];
+            var v2 = [(data.vertices[1][0] - minX) * scale, h - (data.vertices[1][1] - minY) * scale];
+            var v3 = [(data.vertices[2][0] - minX) * scale, h - (data.vertices[2][1] - minY) * scale];
+
+            // Draw the triangle
+            var path = new Path2D();
+            path.moveTo(v1[0], v1[1]);
+            path.lineTo(v2[0], v2[1]);
+            path.lineTo(v3[0], v3[1]);
+            path.closePath();
+            context.fill(path);
         });
     }
 }
