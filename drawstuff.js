@@ -110,7 +110,7 @@ function getInputEllipsoids() {
 //get the input triangles from the standard class URL
 function getInputTriangles() {
     const INPUT_TRIANGLES_URL = 
-        "https://raw.githubusercontent.com/naisarg12/prog1_naisarg/refs/heads/gh-pages/trianglesun.json";
+        "https://raw.githubusercontent.com/naisarg12/prog1_naisarg/refs/heads/gh-pages/triangles_bgbird.json";
         
     // load the triangles file
     var httpReq = new XMLHttpRequest(); // a new http request
