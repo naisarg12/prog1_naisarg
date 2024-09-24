@@ -489,6 +489,8 @@ function main() {
     
     //drawRandPixelsInInputTriangles(context);
       // shows how to draw pixels and read input file
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
     context.fillStyle = "black"; // Set the fill color to black
     context.fillRect(0, 0, canvas.width, canvas.height); // Fill the entire canvas
