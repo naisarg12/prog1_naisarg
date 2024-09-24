@@ -2,112 +2,112 @@
   {
     "material": {
       "ambient": [0.1, 0.1, 0.1],
-      "diffuse": [1.0, 0.0, 0.0],  // Red
+      "diffuse": [1.0, 0.0, 0.0],  
       "specular": [1, 1, 1],
       "n": 5
     },
     "vertices": [
-      [0.0, 0.5, 0.0],    // Top vertex
-      [0.3, 0.0, 0.0],    // Right vertex
-      [-0.3, 0.0, 0.0]    // Left vertex
+      [0.0, 0.5, 0.0],    
+      [0.3, 0.0, 0.0],    
+      [-0.3, 0.0, 0.0]    
     ],
     "triangles": [[0, 1, 2]]
   },
   {
     "material": {
       "ambient": [0.1, 0.1, 0.1],
-      "diffuse": [0.0, 1.0, 0.0],  // Green
+      "diffuse": [0.0, 1.0, 0.0], 
       "specular": [1, 1, 1],
       "n": 5
     },
     "vertices": [
-      [0.0, 0.4, 0.0],    // Top vertex
-      [0.25, -0.1, 0.0],  // Right vertex
-      [-0.25, -0.1, 0.0]  // Left vertex
+      [0.0, 0.4, 0.0],    
+      [0.25, -0.1, 0.0],  
+      [-0.25, -0.1, 0.0]  
     ],
     "triangles": [[0, 1, 2]]
   },
   {
     "material": {
       "ambient": [0.1, 0.1, 0.1],
-      "diffuse": [0.0, 0.0, 1.0],  // Blue
+      "diffuse": [0.0, 0.0, 1.0],  
       "specular": [1, 1, 1],
       "n": 5
     },
     "vertices": [
-      [0.0, 0.3, 0.0],    // Top vertex
-      [0.2, -0.2, 0.0],   // Right vertex
-      [-0.2, -0.2, 0.0]   // Left vertex
+      [0.0, 0.3, 0.0],    
+      [0.2, -0.2, 0.0],   
+      [-0.2, -0.2, 0.0]   
     ],
     "triangles": [[0, 1, 2]]
   },
   {
     "material": {
       "ambient": [0.1, 0.1, 0.1],
-      "diffuse": [1.0, 0.5, 0.0],  // Orange
+      "diffuse": [1.0, 0.5, 0.0],  
       "specular": [1, 1, 1],
       "n": 5
     },
     "vertices": [
-      [0.0, 0.2, 0.0],    // Top vertex
-      [0.15, -0.3, 0.0],  // Right vertex
-      [-0.15, -0.3, 0.0]  // Left vertex
+      [0.0, 0.2, 0.0],    
+      [0.15, -0.3, 0.0],  
+      [-0.15, -0.3, 0.0]  
     ],
     "triangles": [[0, 1, 2]]
   },
   {
     "material": {
       "ambient": [0.1, 0.1, 0.1],
-      "diffuse": [0.5, 0.0, 0.5],  // Purple
+      "diffuse": [0.5, 0.0, 0.5],  
       "specular": [1, 1, 1],
       "n": 5
     },
     "vertices": [
-      [0.0, 0.1, 0.0],    // Top vertex
-      [0.1, -0.4, 0.0],   // Right vertex
-      [-0.1, -0.4, 0.0]   // Left vertex
+      [0.0, 0.1, 0.0],    
+      [0.1, -0.4, 0.0],   
+      [-0.1, -0.4, 0.0]   
     ],
     "triangles": [[0, 1, 2]]
   },
   {
     "material": {
       "ambient": [0.1, 0.1, 0.1],
-      "diffuse": [1.0, 1.0, 0.0],  // Yellow
+      "diffuse": [1.0, 1.0, 0.0],  
       "specular": [1, 1, 1],
       "n": 5
     },
     "vertices": [
-      [0.0, 0.6, 0.0],    // Top vertex of the star
-      [0.1, 0.5, 0.0],    // Right vertex of the star
-      [-0.1, 0.5, 0.0]    // Left vertex of the star
+      [0.0, 0.6, 0.0],    
+      [0.1, 0.5, 0.0],    
+      [-0.1, 0.5, 0.0]    
     ],
     "triangles": [[0, 1, 2]]
   },
   {
     "material": {
       "ambient": [0.1, 0.1, 0.1],
-      "diffuse": [1.0, 1.0, 0.0],  // Yellow
+      "diffuse": [1.0, 1.0, 0.0],  
       "specular": [1, 1, 1],
       "n": 5
     },
     "vertices": [
-      [0.0, 0.5, 0.0],    // Bottom vertex of the star
-      [0.05, 0.7, 0.0],   // Right vertex of the star
-      [-0.05, 0.7, 0.0]   // Left vertex of the star
+      [0.0, 0.5, 0.0],    
+      [0.05, 0.7, 0.0],   
+      [-0.05, 0.7, 0.0]   
     ],
     "triangles": [[0, 1, 2]]
   },
   {
     "material": {
       "ambient": [0.1, 0.1, 0.1],
-      "diffuse": [1.0, 1.0, 0.0],  // Yellow
+      "diffuse": [1.0, 1.0, 0.0], 
       "specular": [1, 1, 1],
       "n": 5
     },
     "vertices": [
-      [0.0, 0.6, 0.0],    // Top vertex of the star
-      [0.1, 0.7, 0.0],    // Right vertex of the star
-      [-0.1, 0.7, 0.0]    // Left vertex of the star
+      [0.0, 0.6, 0.0],   
+      [0.1, 0.7, 0.0],   
+      [-0.1, 0.7, 0.0]   
     ],
     "triangles": [[0, 1, 2]]
   }
