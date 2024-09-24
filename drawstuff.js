@@ -489,6 +489,9 @@ function main() {
     
     //drawRandPixelsInInputTriangles(context);
       // shows how to draw pixels and read input file
+
+    context.fillStyle = "black"; // Set the fill color to black
+    context.fillRect(0, 0, canvas.width, canvas.height); // Fill the entire canvas
 	
     window.addEventListener("keydown", function(event) {
         if (event.code === "Space") {
