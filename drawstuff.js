@@ -489,8 +489,14 @@ function main() {
     
     //drawRandPixelsInInputTriangles(context);
       // shows how to draw pixels and read input file
-    
-    drawInputTrianglesUsingPaths(context);
+	
+    window.addEventListener("keydown", function(event) {
+        if (event.code === "Space") {
+            // Once the spacebar is pressed, the image will be drawn
+            drawInputTrianglesUsingPaths(context);
+            // we can call other draw functions similarly if needed
+        }
+    });
       // shows how to read input file, but not how to draw pixels
     
     //drawRandPixelsInInputBoxes(context);
